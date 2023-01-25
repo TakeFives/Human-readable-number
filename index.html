@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Human Readable Number</title>
+    <style>
+      body {
+        background-color: #fff;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2em;
+        width: 100%;
+        height: 100vh;
+        flex-direction: column;
+      }
+      .form {
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+      }
+      .form__label {
+        color: #444;
+      }
+      .form__input {
+        padding: 10px 14px;
+        border-radius: 5px;
+        border: none;
+        box-shadow: inset 1px 1px 5px #ddd;
+      }
+      .form__button {
+        align-self: flex-end;
+        font-size: 14px;
+        text-transform: capitalize;
+        padding: 10px 14px;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        color: #fff;
+        background: #444;
+        cursor: pointer;
+        position: relative;
+        z-index: 0;
+        border-radius: 10px;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+      }
+
+      .form__button:before {
+        content: "";
+        background: linear-gradient(
+          45deg,
+          #ff0000,
+          #ff7300,
+          #fffb00,
+          #48ff00,
+          #00ffd5,
+          #002bff,
+          #7a00ff,
+          #ff00c8,
+          #ff0000
+        );
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        background-size: 400%;
+        z-index: -1;
+        filter: blur(5px);
+        -webkit-filter: blur(5px);
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        animation: button 20s linear infinite;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 10px;
+      }
+      .form__button:after {
+        z-index: -1;
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #222;
+        left: 0;
+        top: 0;
+        border-radius: 10px;
+      }
+      .result__text {
+        font-size: 2em;
+        color: transparent;
+        background-image: linear-gradient(
+          45deg,
+          #ff0000,
+          #ff7300,
+          #fffb00,
+          #48ff00,
+          #00ffd5,
+          #002bff,
+          #7a00ff,
+          #ff00c8,
+          #ff0000
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      @keyframes button {
+        0% {
+          background-position: 0 0;
+        }
+        50% {
+          background-position: 400% 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form">
+        <label for="number" class="form__label">Enter some number 1 to 999</label>
+        <input type="number" id="number" class="form__input" />
+        <button
+          type="submit"
+          onclick="transformNumbersToWords(this.previousElementSibling.value)"
+          class="form__button"
+        >
+          submit
+        </button>
+      </div>
+      <div class="result">
+        <span class="result__text"></span>
+      </div>
+    </div>
+
+    <script>
+      function transformNumbersToWords(number) {
+        if (!number) return;
+        if(number > 999) return;
+        let firstDozen = [
+          "zero",
+          "one",
+          "two",
+          "three",
+          "four",
+          "five",
+          "six",
+          "seven",
+          "eight",
+          "nine",
+        ];
+        let secondDozen = [
+          "ten",
+          "eleven",
+          "twelve",
+          "thirteen",
+          "fourteen",
+          "fifteen",
+          "sixteen",
+          "seventeen",
+          "eighteen",
+          "nineteen",
+        ];
+        let dozens = [
+          "",
+          "",
+          "twenty",
+          "thirty",
+          "forty",
+          "fifty",
+          "sixty",
+          "seventy",
+          "eighty",
+          "ninety",
+        ];
+        let hrn = "";
+        let count = number.toString().split("");
+
+        if (0 <= number && number < 10) {
+          hrn = hrn + firstDozen[number];
+        }
+
+        if (10 <= number && number < 20) {
+          hrn = hrn + secondDozen[number - 10];
+        }
+
+        if (count.length === 2) {
+          if (number > 19) {
+            if (count[count.length - 1] === "0") {
+              hrn = hrn + dozens[count[0]];
+            }
+            if (count[count.length - 1] > 0) {
+              hrn = hrn + dozens[count[0]] + " " + firstDozen[count[1]];
+            }
+          }
+        }
+        if (count.length === 3) {
+          if (number > 99) {
+            let hundredNumber = firstDozen[count[0]] + " " + "hundred";
+
+            if (
+              count[count.length - 2] === "0" &&
+              count[count.length - 1] === "0"
+            ) {
+              hrn = hrn + hundredNumber;
+            }
+            if (
+              count[count.length - 2] === "0" &&
+              count[count.length - 1] > "0"
+            ) {
+              hrn =
+                hrn + hundredNumber + " " + firstDozen[count[count.length - 1]];
+            }
+            if (
+              count[count.length - 2] === "1" &&
+              count[count.length - 1] === "0"
+            ) {
+              hrn = hrn + hundredNumber + " " + secondDozen[0];
+            }
+            if (
+              count[count.length - 2] > 1 &&
+              count[count.length - 1] === "0"
+            ) {
+              hrn = hrn + hundredNumber + " " + dozens[count[count.length - 2]];
+            }
+            if (
+              count[count.length - 2] === "1" &&
+              count[count.length - 1] > 0
+            ) {
+              hrn =
+                hrn +
+                hundredNumber +
+                " " +
+                secondDozen[count[count.length - 1]];
+            }
+            if (count[count.length - 2] > 1 && count[count.length - 1] > 0) {
+              hrn =
+                hrn +
+                hundredNumber +
+                " " +
+                dozens[count[count.length - 2]] +
+                " " +
+                firstDozen[count[count.length - 1]];
+            }
+          }
+        }
+        document.querySelector(".result__text").innerHTML = hrn;
+        return hrn;
+      }
+    </script>
+  </body>
+</html>
